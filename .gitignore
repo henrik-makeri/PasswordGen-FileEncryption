@@ -1,0 +1,30 @@
+# Python virtualenvs and caches
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Build artifacts
+dist
+build
+*.egg-info/
+
+# Local scratch files
+.tmp
+.tmp-tests
+*.log
+notes*.txt
+notes*.enc
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

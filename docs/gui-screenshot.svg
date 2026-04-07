@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="820" viewBox="0 0 1260 820" fill="none">
+  <rect width="1260" height="820" fill="#08111c"/>
+  <rect x="44" y="40" width="1172" height="740" rx="28" fill="#0d1724" stroke="#1d2a3d"/>
+  <text x="92" y="120" fill="#f2fffd" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">crypto tools</text>
+  <text x="92" y="160" fill="#9fc1c2" font-family="Segoe UI, Arial, sans-serif" font-size="20">passwords, file encryption, and hashing in one little desktop app</text>
+
+  <rect x="92" y="206" width="160" height="46" rx="14" fill="#123b3b"/>
+  <text x="126" y="236" fill="#74f5d5" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">passwords</text>
+  <rect x="266" y="206" width="208" height="46" rx="14" fill="#101b2a"/>
+  <text x="306" y="236" fill="#d8ecec" font-family="Segoe UI, Arial, sans-serif" font-size="19">file encryption</text>
+  <rect x="488" y="206" width="148" height="46" rx="14" fill="#101b2a"/>
+  <text x="536" y="236" fill="#d8ecec" font-family="Segoe UI, Arial, sans-serif" font-size="19">hash tools</text>
+
+  <rect x="92" y="288" width="704" height="426" rx="24" fill="#101b2a"/>
+  <rect x="824" y="288" width="300" height="426" rx="24" fill="#101b2a"/>
+
+  <text x="128" y="348" fill="#f2fffd" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">password generator</text>
+  <text x="128" y="384" fill="#9fc1c2" font-family="Segoe UI, Arial, sans-serif" font-size="18">random or english-word passphrases</text>
+
+  <circle cx="136" cy="434" r="8" fill="#eef8f8"/>
+  <text x="154" y="440" fill="#eef8f8" font-family="Segoe UI, Arial, sans-serif" font-size="18">random</text>
+  <circle cx="248" cy="434" r="8" fill="#08111c" stroke="#eef8f8" stroke-width="3"/>
+  <text x="266" y="440" fill="#eef8f8" font-family="Segoe UI, Arial, sans-serif" font-size="18">pronounceable</text>
+
+  <text x="128" y="492" fill="#9fc1c2" font-family="Segoe UI, Arial, sans-serif" font-size="18">generated password</text>
+  <rect x="128" y="516" width="632" height="98" rx="18" fill="#0c1622"/>
+  <text x="156" y="574" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="30" font-weight="700">anchor-velvet-cinder-trace</text>
+
+  <text x="128" y="652" fill="#f2fffd" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">strength: insane</text>
+  <rect x="128" y="672" width="112" height="14" rx="7" fill="#74f5d5"/>
+  <rect x="252" y="672" width="112" height="14" rx="7" fill="#74f5d5"/>
+  <rect x="376" y="672" width="112" height="14" rx="7" fill="#74f5d5"/>
+  <rect x="500" y="672" width="112" height="14" rx="7" fill="#74f5d5"/>
+
+  <rect x="128" y="728" width="154" height="48" rx="16" fill="#74f5d5"/>
+  <text x="177" y="758" fill="#041311" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">generate</text>
+  <rect x="298" y="728" width="120" height="48" rx="16" fill="#1d2a3d"/>
+  <text x="340" y="758" fill="#eef8f8" font-family="Segoe UI, Arial, sans-serif" font-size="20">copy</text>
+
+  <text x="856" y="348" fill="#f2fffd" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">history</text>
+  <rect x="856" y="380" width="236" height="280" rx="18" fill="#0c1622"/>
+  <text x="882" y="430" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="20">anchor-velvet-</text>
+  <text x="882" y="462" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="20">cinder-trace</text>
+  <text x="882" y="522" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="20">mango-signal-</text>
+  <text x="882" y="554" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="20">forest-zebra</text>
+  <text x="882" y="614" fill="#f4fffd" font-family="Cascadia Code, Consolas, monospace" font-size="20">2zQ!mL7$pW@a</text>
+
+  <text x="856" y="704" fill="#9fc1c2" font-family="Segoe UI, Arial, sans-serif" font-size="18">slightly old mockup from an earlier README pass lol</text>
+</svg>

@@ -1,7 +1,7 @@
 # crypto tools
 
-i wanted to make something that felt a little more real than another tiny "generate a password" script.
-it started there, then it turned into file encryption, hashing, and a desktop gui. some of it is still a little scrappy, but honestly i kind of like that :D
+I wanted to make something that felt a little more real than another tiny "generate a password" script.
+it started there, then it turned into file encryption, hashing, and a desktop gui. some of it is still a little scrappy.
 
 ![gui preview](docs/gui-screenshot.svg)
 
@@ -95,18 +95,17 @@ by default, decrypted files go to names like `notes.decrypted.txt` so i do not a
 - passphrases are built from filtered english words and still picked with `secrets`
 - file encryption uses aes-256-gcm plus pbkdf2-hmac-sha256
 - if decryption fails, it is usually the wrong password or a modified file
-- passing a password with `--password` is handy for testing, but typing it interactively is safer
+- passing a password with `--password` is handy for testing
 
 ## rough edges
 
 - `600000` pbkdf2 iterations can feel a little slow on older machines
-- the passphrase list is better than the old hand-written one, but some words are still pretty plain lol
+- the passphrase list is better than the old hand-written one, but some words are still pretty plain
 - md5 is here mostly because it is familiar and useful for quick checks, not because it is modern crypto
 
 ## what changed
 
 there is a real change log in [CHANGELOG.md](CHANGELOG.md), and a tiny issue trail in [docs/issue-log.md](docs/issue-log.md).
-that felt more honest than pretending this thing appeared fully formed in one perfect version.
 
 ## tests
 

@@ -1,6 +1,6 @@
 # crypto tools
 
-I wanted to make something a little bigger than another tiny "generate a password" script.
+I wanted to make something a little bigger than another "generate a password" script.
 it started there, then it turned into file encryption, hashing, and a desktop gui.
 
 ![gui preview](docs/gui-screenshot.svg)

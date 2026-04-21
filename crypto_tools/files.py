@@ -94,22 +94,6 @@ def _default_decrypted_path(source: Path) -> Path:
     return source.with_name(f"{source.name}.decrypted")
 
 
-def _ensure_can_write(destination: Path, overwrite: bool) -> None:
-    if destination.exists() and not overwrite:
-        raise FileExistsError(
-            f"{destination} already exists. Pass --overwrite or choose a new output path."
-        )
-
-
-def _temporary_output_path(destination: Path) -> Path:
-    # write to a temp file first
-    return destination.with_name(f"{destination.name}.partial")
-
-
-def _replace_output(temp_path: Path, destination: Path) -> None:
-    temp_path.replace(destination)
-
-
 def _legacy_decrypt_file(
     source_path: Path,
     password: str,
@@ -119,10 +103,14 @@ def _legacy_decrypt_file(
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> Path:
     # old file format path
-    _ensure_can_write(destination_path, overwrite)
-    temp_path = _temporary_output_path(destination_path)
-    if temp_path.exists():
-        temp_path.unlink()
+    if destination_path.exists() and not overwrite:
+        raise FileExistsError(
+            f"{destination_path} already exists. Pass --overwrite or choose a new output path."
+        )
+
+    temp_file = destination_path.with_name(f"{destination_path.name}.partial")
+    if temp_file.exists():
+        temp_file.unlink()
 
     blob = source_path.read_bytes()
     total = len(blob)
@@ -131,11 +119,11 @@ def _legacy_decrypt_file(
 
     try:
         decrypted = decrypt_bytes(blob, password)
-        temp_path.write_bytes(decrypted)
-        _replace_output(temp_path, destination_path)
+        temp_file.write_bytes(decrypted)
+        temp_file.replace(destination_path)
     except Exception:
-        if temp_path.exists():
-            temp_path.unlink()
+        if temp_file.exists():
+            temp_file.unlink()
         raise
 
     if progress_callback:
@@ -153,17 +141,20 @@ def encrypt_file(
     progress_callback: Callable[[int, int], None] | None = None,
     chunk_size: int = DEFAULT_CHUNK_SIZE,
 ) -> Path:
-    source_path = Path(source)
-    if not source_path.is_file():
-        raise FileNotFoundError(f"Input file not found: {source_path}")
+    src = Path(source)
+    if not src.is_file():
+        raise FileNotFoundError(f"Input file not found: {src}")
 
     if destination:
-        destination_path = Path(destination)
+        out_path = Path(destination)
     else:
-        destination_path = _default_encrypted_path(source_path)
-    _ensure_can_write(destination_path, overwrite)
+        out_path = _default_encrypted_path(src)
+    if out_path.exists() and not overwrite:
+        raise FileExistsError(
+            f"{out_path} already exists. Pass --overwrite or choose a new output path."
+        )
 
-    total_size = source_path.stat().st_size
+    total_size = src.stat().st_size
     salt = secrets.token_bytes(SALT_SIZE)
     nonce = secrets.token_bytes(NONCE_SIZE)
     key = _derive_key(password, salt)
@@ -177,17 +168,17 @@ def encrypt_file(
         nonce,
     )
 
-    temp_path = _temporary_output_path(destination_path)
+    temp_path = out_path.with_name(f"{out_path.name}.partial")
     if temp_path.exists():
         temp_path.unlink()
 
     if progress_callback:
         progress_callback(0, total_size)
 
-    processed = 0
+    done_bytes = 0
 
     try:
-        with source_path.open("rb") as source_file, temp_path.open("wb") as target_file:
+        with src.open("rb") as source_file, temp_path.open("wb") as target_file:
             target_file.write(header)
 
             while True:
@@ -197,14 +188,14 @@ def encrypt_file(
                     break
 
                 target_file.write(encryptor.update(chunk))
-                processed += len(chunk)
+                done_bytes += len(chunk)
                 if progress_callback:
-                    progress_callback(processed, total_size)
+                    progress_callback(done_bytes, total_size)
 
             target_file.write(encryptor.finalize())
             target_file.write(encryptor.tag)
 
-        _replace_output(temp_path, destination_path)
+        temp_path.replace(out_path)
     except Exception:
         if temp_path.exists():
             temp_path.unlink()
@@ -213,7 +204,7 @@ def encrypt_file(
     if progress_callback:
         progress_callback(total_size, total_size)
 
-    return destination_path
+    return out_path
 
 
 def decrypt_file(
@@ -248,20 +239,23 @@ def decrypt_file(
     if magic != STREAM_MAGIC:
         raise ValueError("Unsupported encrypted file format.")
 
-    _ensure_can_write(destination_path, overwrite)
+    if destination_path.exists() and not overwrite:
+        raise FileExistsError(
+            f"{destination_path} already exists. Pass --overwrite or choose a new output path."
+        )
 
     file_size = source_path.stat().st_size
-    header_size = STREAM_HEADER_STRUCT.size
-    if file_size <= header_size + TAG_SIZE:
+    header_len = STREAM_HEADER_STRUCT.size
+    if file_size <= header_len + TAG_SIZE:
         raise ValueError("Encrypted file is too short.")
 
-    temp_path = _temporary_output_path(destination_path)
-    if temp_path.exists():
-        temp_path.unlink()
+    temp_file = destination_path.with_name(f"{destination_path.name}.partial")
+    if temp_file.exists():
+        temp_file.unlink()
 
     try:
         with source_path.open("rb") as source_file:
-            header_data = source_file.read(header_size)
+            header_data = source_file.read(header_len)
             magic, iterations, chunk_size, _original_size, salt, nonce = STREAM_HEADER_STRUCT.unpack(
                 header_data
             )
@@ -272,10 +266,10 @@ def decrypt_file(
             if chunk_size < 1:
                 raise ValueError("Encrypted file has an invalid chunk size.")
 
-            ciphertext_size = file_size - header_size - TAG_SIZE
+            ciphertext_size = file_size - header_len - TAG_SIZE
             source_file.seek(file_size - TAG_SIZE)
             tag = source_file.read(TAG_SIZE)
-            source_file.seek(header_size)
+            source_file.seek(header_len)
 
             key = _derive_key(password, salt)
             decryptor = Cipher(algorithms.AES(key), modes.GCM(nonce, tag)).decryptor()
@@ -283,30 +277,30 @@ def decrypt_file(
             if progress_callback:
                 progress_callback(0, ciphertext_size)
 
-            processed = 0
-            with temp_path.open("wb") as target_file:
-                while processed < ciphertext_size:
+            done = 0
+            with temp_file.open("wb") as target_file:
+                while done < ciphertext_size:
                     # same idea as encrypt, just backwards
-                    to_read = min(chunk_size, ciphertext_size - processed)
+                    to_read = min(chunk_size, ciphertext_size - done)
                     chunk = source_file.read(to_read)
                     if not chunk:
                         raise ValueError("Encrypted file is truncated.")
 
                     target_file.write(decryptor.update(chunk))
-                    processed += len(chunk)
+                    done += len(chunk)
                     if progress_callback:
-                        progress_callback(processed, ciphertext_size)
+                        progress_callback(done, ciphertext_size)
 
                 target_file.write(decryptor.finalize())
 
-        _replace_output(temp_path, destination_path)
+        temp_file.replace(destination_path)
     except InvalidTag as exc:
-        if temp_path.exists():
-            temp_path.unlink()
+        if temp_file.exists():
+            temp_file.unlink()
         raise ValueError("Wrong password or corrupted file.") from exc
     except Exception:
-        if temp_path.exists():
-            temp_path.unlink()
+        if temp_file.exists():
+            temp_file.unlink()
         raise
 
     if progress_callback:

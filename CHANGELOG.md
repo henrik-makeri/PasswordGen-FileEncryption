@@ -4,9 +4,8 @@
 
 ### changed
 
-- rewrote the README so it sounds more like me and less like a product page
-- added a tiny issue log and a docs preview image
-- roughened up some comments so they read more like normal dev notes
+- updated the README
+- added an issue log and a docs preview image
 
 ## 2026-04-01
 

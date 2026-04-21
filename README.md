@@ -1,7 +1,7 @@
 # crypto tools
 
-I wanted to make something that felt a little more real than another tiny "generate a password" script.
-it started there, then it turned into file encryption, hashing, and a desktop gui. some of it is still a little scrappy.
+I wanted to make something a little bigger than another tiny "generate a password" script.
+it started there, then it turned into file encryption, hashing, and a desktop gui.
 
 ![gui preview](docs/gui-screenshot.svg)
 
@@ -119,7 +119,7 @@ if i want to rebuild from scratch:
 
 for a showcase on another windows pc, the easiest move is usually to zip the whole `dist\CryptoTools` folder and bring that over.
 
-do not commit the `dist` folder to git. i keep the repo as source code only, and if i want to share the built app i upload the zip in a GitHub Release instead.
+do not commit the `dist` folder to git. if i want to share the built app, i upload the zip in a GitHub Release instead.
 
 ## a few notes
 
@@ -137,7 +137,7 @@ do not commit the `dist` folder to git. i keep the repo as source code only, and
 
 ## what changed
 
-there is a real change log in [CHANGELOG.md](CHANGELOG.md), and a tiny issue trail in [docs/issue-log.md](docs/issue-log.md).
+see [CHANGELOG.md](CHANGELOG.md) and [docs/issue-log.md](docs/issue-log.md).
 
 ## tests
 

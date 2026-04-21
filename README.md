@@ -89,6 +89,38 @@ python -m crypto_tools hash --file .\notes.txt --algorithm md5
 
 by default, decrypted files go to names like `notes.decrypted.txt` so i do not accidentally stomp the original one.
 
+## build a windows app
+
+if i want a standalone build for demos, i use pyinstaller.
+
+install the extra build dependency:
+
+```powershell
+python -m pip install -e .[build]
+```
+
+then build the app:
+
+```powershell
+.\scripts\build_windows.ps1
+```
+
+that drops the packaged app here:
+
+```text
+dist\CryptoTools\CryptoTools.exe
+```
+
+if i want to rebuild from scratch:
+
+```powershell
+.\scripts\build_windows.ps1 -Clean
+```
+
+for a showcase on another windows pc, the easiest move is usually to zip the whole `dist\CryptoTools` folder and bring that over.
+
+do not commit the `dist` folder to git. i keep the repo as source code only, and if i want to share the built app i upload the zip in a GitHub Release instead.
+
 ## a few notes
 
 - random passwords use python's `secrets` module

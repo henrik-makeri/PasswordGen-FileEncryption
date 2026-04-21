@@ -14,6 +14,11 @@ dependencies = [
   "wordfreq>=3.1.1",
 ]
 
+[project.optional-dependencies]
+build = [
+  "pyinstaller>=6.0",
+]
+
 [project.scripts]
 crypto-tools = "crypto_tools.cli:main"
 

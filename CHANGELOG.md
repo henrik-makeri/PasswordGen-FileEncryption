@@ -1,5 +1,13 @@
 # changelog
 
+## 2026-04-23
+
+### added
+
+- pyinstaller packaging setup for the desktop app
+- windows build script and spec file
+- mit license
+
 ## 2026-04-07
 
 ### changed

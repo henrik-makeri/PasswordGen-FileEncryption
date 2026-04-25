@@ -1,7 +1,6 @@
 # crypto tools
 
-I wanted to make something a little bigger than another "generate a password" script.
-it started there, then it turned into file encryption, hashing, and a desktop gui.
+I wanted to make something a little bigger than "generate a password" script. Started fromm there and then it turned into file encryption, hashing, and a desktop gui.
 
 ![gui preview](docs/gui-screenshot.svg)
 
@@ -121,7 +120,7 @@ for a showcase on another windows pc, the easiest move is usually to zip the who
 
 do not commit the `dist` folder to git. if i want to share the built app, i upload the zip in a GitHub Release instead.
 
-## a few notes
+## notes
 
 - random passwords use python's `secrets` module
 - passphrases are built from filtered english words and still picked with `secrets`
@@ -129,7 +128,7 @@ do not commit the `dist` folder to git. if i want to share the built app, i uplo
 - if decryption fails, it is usually the wrong password or a modified file
 - passing a password with `--password` is handy for testing
 
-## rough edges
+## to work on
 
 - `600000` pbkdf2 iterations can feel a little slow on older machines
 - the passphrase list is better than the old hand-written one, but some words are still pretty plain

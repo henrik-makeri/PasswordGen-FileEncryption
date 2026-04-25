@@ -5,6 +5,8 @@ import hashlib
 from pathlib import Path
 
 
+# md5 is here for quick file checks and compatibility only.
+# do not use it for passwords or anything security-sensitive.
 HASH_ALGORITHMS = {
     "md5": "MD5",
     "sha256": "SHA-256",
@@ -27,6 +29,7 @@ def format_hash_algorithm_label(name: str) -> str:
 
 def hash_text(text: str, algorithm: str = "sha256") -> str:
     algo = normalize_algorithm(algorithm)
+    # md5 is not collision-safe enough for security use
     hasher = hashlib.new(algo)
     hasher.update(text.encode("utf-8"))
     return hasher.hexdigest()
@@ -44,6 +47,7 @@ def hash_file(
         raise FileNotFoundError(f"Input file not found: {source_path}")
 
     algorithm_name = normalize_algorithm(algorithm)
+    # md5 is fine for quick fingerprints, not security decisions
     hasher = hashlib.new(algorithm_name)
     total_size = source_path.stat().st_size
     processed = 0

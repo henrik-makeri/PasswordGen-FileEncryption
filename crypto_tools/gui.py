@@ -20,6 +20,7 @@ from .files import ENCRYPTION_ALGORITHM, decrypt_file, encrypt_file
 from .hashing import HASH_ALGORITHMS, format_hash_algorithm_label, hash_file, hash_text
 from .passwords import (
     PasswordOptions,
+    PronounceablePasswordOptions,
     classify_entropy_bits,
     estimate_entropy_bits,
     estimate_pronounceable_entropy_bits,
@@ -98,6 +99,15 @@ class CryptoToolsApp(BaseWindow):
         )
         self.length_var = tk.IntVar(value=int(self.preferences.get("length", 20)))
         self.word_count_var = tk.IntVar(value=int(self.preferences.get("word_count", 4)))
+        self.pronounceable_caps_var = tk.BooleanVar(
+            value=bool(self.preferences.get("pronounceable_caps", False))
+        )
+        self.pronounceable_number_var = tk.BooleanVar(
+            value=bool(self.preferences.get("pronounceable_number", False))
+        )
+        self.pronounceable_symbol_var = tk.BooleanVar(
+            value=bool(self.preferences.get("pronounceable_symbol", False))
+        )
         self.uppercase_var = tk.BooleanVar(value=bool(self.preferences.get("uppercase", True)))
         self.lowercase_var = tk.BooleanVar(value=bool(self.preferences.get("lowercase", True)))
         self.numbers_var = tk.BooleanVar(value=bool(self.preferences.get("numbers", True)))
@@ -378,6 +388,27 @@ class CryptoToolsApp(BaseWindow):
             width=6,
             command=self._preview_password,
         ).pack(side="left", padx=(8, 0))
+        ttk.Checkbutton(
+            self.pronounceable_controls,
+            text="Capitalize one word",
+            variable=self.pronounceable_caps_var,
+            style="Section.TCheckbutton",
+            command=self._preview_password,
+        ).pack(anchor="w", pady=(8, 4))
+        ttk.Checkbutton(
+            self.pronounceable_controls,
+            text="Append number",
+            variable=self.pronounceable_number_var,
+            style="Section.TCheckbutton",
+            command=self._preview_password,
+        ).pack(anchor="w", pady=4)
+        ttk.Checkbutton(
+            self.pronounceable_controls,
+            text="Append symbol",
+            variable=self.pronounceable_symbol_var,
+            style="Section.TCheckbutton",
+            command=self._preview_password,
+        ).pack(anchor="w", pady=4)
         ttk.Frame(self.pronounceable_controls, height=10, style="Card.TFrame").pack(fill="x")
 
         ttk.Label(controls, text="Generated Password", style="Muted.TLabel").pack(
@@ -753,6 +784,9 @@ class CryptoToolsApp(BaseWindow):
             "password_mode": self.password_mode_var.get(),
             "length": self.length_var.get(),
             "word_count": self.word_count_var.get(),
+            "pronounceable_caps": self.pronounceable_caps_var.get(),
+            "pronounceable_number": self.pronounceable_number_var.get(),
+            "pronounceable_symbol": self.pronounceable_symbol_var.get(),
             "uppercase": self.uppercase_var.get(),
             "lowercase": self.lowercase_var.get(),
             "numbers": self.numbers_var.get(),
@@ -777,10 +811,29 @@ class CryptoToolsApp(BaseWindow):
             symbols=self.symbols_var.get(),
         )
 
+    def _pronounceable_password_options(self) -> PronounceablePasswordOptions:
+        return PronounceablePasswordOptions(
+            word_count=self.word_count_var.get(),
+            capitalize_words=self.pronounceable_caps_var.get(),
+            add_number=self.pronounceable_number_var.get(),
+            add_symbol=self.pronounceable_symbol_var.get(),
+        )
+
     def _current_password_state(self) -> tuple[str, str, float]:
         if self.password_mode_var.get() == "pronounceable":
-            password = generate_pronounceable_password(self.word_count_var.get())
-            entropy = estimate_pronounceable_entropy_bits(self.word_count_var.get())
+            options = self._pronounceable_password_options()
+            password = generate_pronounceable_password(
+                options.word_count,
+                capitalize_words=options.capitalize_words,
+                add_number=options.add_number,
+                add_symbol=options.add_symbol,
+            )
+            entropy = estimate_pronounceable_entropy_bits(
+                options.word_count,
+                capitalize_words=options.capitalize_words,
+                add_number=options.add_number,
+                add_symbol=options.add_symbol,
+            )
             return password, classify_entropy_bits(entropy), entropy
 
         options = self._password_options()

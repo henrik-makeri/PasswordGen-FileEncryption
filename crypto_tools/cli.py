@@ -6,6 +6,7 @@ from .files import decrypt_file, encrypt_file, read_password
 from .hashing import HASH_ALGORITHMS, hash_file, hash_text
 from .passwords import (
     PasswordOptions,
+    PronounceablePasswordOptions,
     classify_entropy_bits,
     classify_strength,
     estimate_entropy_bits,
@@ -39,6 +40,21 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4,
         help="How many words to use in pronounceable mode.",
+    )
+    password_parser.add_argument(
+        "--capitalize-words",
+        action="store_true",
+        help="Capitalize one word in pronounceable mode.",
+    )
+    password_parser.add_argument(
+        "--append-number",
+        action="store_true",
+        help="Append a random digit in pronounceable mode.",
+    )
+    password_parser.add_argument(
+        "--append-symbol",
+        action="store_true",
+        help="Append a random symbol in pronounceable mode.",
     )
     password_parser.add_argument(
         "--no-uppercase", action="store_true", help="Exclude uppercase letters."
@@ -109,11 +125,29 @@ def _run_password_command(args: argparse.Namespace) -> int:
         if args.words < 1:
             raise ValueError("--words must be at least 1.")
 
-        entropy = estimate_pronounceable_entropy_bits(args.words)
+        options = PronounceablePasswordOptions(
+            word_count=args.words,
+            capitalize_words=args.capitalize_words,
+            add_number=args.append_number,
+            add_symbol=args.append_symbol,
+        )
+        entropy = estimate_pronounceable_entropy_bits(
+            options.word_count,
+            capitalize_words=options.capitalize_words,
+            add_number=options.add_number,
+            add_symbol=options.add_symbol,
+        )
         strength = classify_entropy_bits(entropy)
         for _ in range(args.count):
             # same word count, same strength label
-            print(generate_pronounceable_password(args.words))
+            print(
+                generate_pronounceable_password(
+                    options.word_count,
+                    capitalize_words=options.capitalize_words,
+                    add_number=options.add_number,
+                    add_symbol=options.add_symbol,
+                )
+            )
             if args.show_strength:
                 print(f"Strength: {strength} ({entropy:.1f} bits)")
         return 0

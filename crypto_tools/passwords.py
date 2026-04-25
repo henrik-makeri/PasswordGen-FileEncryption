@@ -10,6 +10,7 @@ from wordfreq import top_n_list
 
 
 SYMBOLS = "!@#$%^&*()_+-={}[]:;<>,.?/"
+PASSPHRASE_SYMBOLS = SYMBOLS.replace("-", "")
 PRONOUNCEABLE_WORD_LIST_SIZE = 5_000
 PRONOUNCEABLE_MIN_LENGTH = 3
 PRONOUNCEABLE_MAX_LENGTH = 8
@@ -22,6 +23,15 @@ class PasswordOptions:
     lowercase: bool = True
     numbers: bool = True
     symbols: bool = False
+
+
+@dataclass(frozen=True)
+class PronounceablePasswordOptions:
+    word_count: int = 4
+    separator: str = "-"
+    capitalize_words: bool = False
+    add_number: bool = False
+    add_symbol: bool = False
 
 
 def _enabled_groups(options: PasswordOptions) -> list[str]:
@@ -104,7 +114,14 @@ def estimate_entropy_bits(options: PasswordOptions) -> float:
     return options.length * math.log2(charset_size)
 
 
-def generate_pronounceable_password(word_count: int = 4, separator: str = "-") -> str:
+def generate_pronounceable_password(
+    word_count: int = 4,
+    separator: str = "-",
+    *,
+    capitalize_words: bool = False,
+    add_number: bool = False,
+    add_symbol: bool = False,
+) -> str:
     if word_count < 1:
         raise ValueError("Word count must be at least 1.")
 
@@ -113,15 +130,43 @@ def generate_pronounceable_password(word_count: int = 4, separator: str = "-") -
     for _ in range(word_count):
         picked.append(secrets.choice(words))
 
-    return separator.join(picked)
+    if capitalize_words:
+        # capitalize one word so it still looks like a passphrase
+        index = secrets.randbelow(len(picked))
+        picked[index] = picked[index].capitalize()
+
+    suffix: list[str] = []
+    if add_number:
+        suffix.append(secrets.choice(string.digits))
+    if add_symbol:
+        suffix.append(secrets.choice(PASSPHRASE_SYMBOLS))
+    if len(suffix) > 1:
+        _secure_shuffle(suffix)
+
+    return separator.join(picked) + "".join(suffix)
 
 
-def estimate_pronounceable_entropy_bits(word_count: int = 4) -> float:
+def estimate_pronounceable_entropy_bits(
+    word_count: int = 4,
+    *,
+    capitalize_words: bool = False,
+    add_number: bool = False,
+    add_symbol: bool = False,
+) -> float:
     if word_count < 1:
         return 0.0
 
-    word_entropy = math.log2(len(get_pronounceable_words()))
-    return word_count * word_entropy
+    word_entropy = word_count * math.log2(len(get_pronounceable_words()))
+    extra_entropy = 0.0
+
+    if capitalize_words:
+        extra_entropy += math.log2(word_count)
+    if add_number:
+        extra_entropy += math.log2(10)
+    if add_symbol:
+        extra_entropy += math.log2(len(PASSPHRASE_SYMBOLS))
+
+    return word_entropy + extra_entropy
 
 
 def classify_entropy_bits(entropy: float) -> str:

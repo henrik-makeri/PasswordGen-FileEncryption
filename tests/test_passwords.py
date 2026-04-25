@@ -42,6 +42,20 @@ class PasswordGeneratorTests(unittest.TestCase):
         password = generate_pronounceable_password(word_count=4)
         self.assertEqual(len(password.split("-")), 4)
 
+    def test_pronounceable_password_can_append_digit_and_symbol(self) -> None:
+        password = generate_pronounceable_password(
+            word_count=4,
+            add_number=True,
+            add_symbol=True,
+        )
+        self.assertEqual(len(password.split("-")), 4)
+        self.assertTrue(any(character.isdigit() for character in password))
+        self.assertTrue(any(not character.isalnum() and character != "-" for character in password))
+
+    def test_pronounceable_password_can_capitalize_one_word(self) -> None:
+        password = generate_pronounceable_password(word_count=4, capitalize_words=True)
+        self.assertTrue(any(part[:1].isupper() for part in password.split("-")))
+
     def test_pronounceable_word_list_comes_from_filtered_english_words(self) -> None:
         words = get_pronounceable_words()
         self.assertGreater(len(words), 500)
@@ -51,6 +65,17 @@ class PasswordGeneratorTests(unittest.TestCase):
     def test_pronounceable_entropy_increases_with_more_words(self) -> None:
         self.assertGreater(
             estimate_pronounceable_entropy_bits(5),
+            estimate_pronounceable_entropy_bits(4),
+        )
+
+    def test_pronounceable_entropy_increases_with_extra_options(self) -> None:
+        self.assertGreater(
+            estimate_pronounceable_entropy_bits(
+                4,
+                capitalize_words=True,
+                add_number=True,
+                add_symbol=True,
+            ),
             estimate_pronounceable_entropy_bits(4),
         )
 
